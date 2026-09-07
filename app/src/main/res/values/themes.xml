@@ -6,4 +6,11 @@
   </style>
 
   <style name="AppTheme" parent="Base.AppTheme" />
+
+  <!-- Tema para el botón de cast: ícono siempre blanco (visible sobre fondo oscuro) -->
+  <style name="Theme.MediaRouter.White" parent="Theme.MediaRouter">
+    <item name="mediaRouteDefaultIconDrawable">@drawable/ic_cast_white</item>
+    <item name="mediaRouteOffDrawable">@drawable/ic_cast_white</item>
+    <item name="mediaRouteOnDrawable">@drawable/ic_cast_white</item>
+  </style>
 </resources>
