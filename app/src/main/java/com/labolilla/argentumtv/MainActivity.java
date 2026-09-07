@@ -264,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Cargar el canal en la TV y ESPERAR la respuesta real
             remoteMediaClient.load(mediaInfo, true, 0)
-                    .setResultCallback(new RemoteMediaClient.MediaChannelResultCallback() {
+                    .setResultCallback(new com.google.android.gms.common.api.ResultCallback<RemoteMediaClient.MediaChannelResult>() {
                         @Override
                         public void onResult(RemoteMediaClient.MediaChannelResult result) {
                             runOnUiThread(() -> {
