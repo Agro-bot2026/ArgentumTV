@@ -262,8 +262,25 @@ public class MainActivity extends AppCompatActivity {
                     .setMetadata(metadata)
                     .build();
 
-            remoteMediaClient.load(mediaInfo, true, 0);
-            Toast.makeText(this, "Transmitiendo al Chromecast", Toast.LENGTH_SHORT).show();
+            // Cargar el canal en la TV y ESPERAR la respuesta real
+            remoteMediaClient.load(mediaInfo, true, 0)
+                    .setResultCallback(new RemoteMediaClient.MediaChannelResultCallback() {
+                        @Override
+                        public void onResult(RemoteMediaClient.MediaChannelResult result) {
+                            runOnUiThread(() -> {
+                                if (result != null && result.getStatus().isSuccess()) {
+                                    Toast.makeText(MainActivity.this, "📺 Transmitiendo: " + nombre, Toast.LENGTH_SHORT).show();
+                                } else {
+                                    String detalle = (result != null && result.getStatus().getStatusCode() != 0)
+                                            ? " (" + result.getStatus().getStatusCode() + ")"
+                                            : "";
+                                    Toast.makeText(MainActivity.this,
+                                            "La TV no pudo reproducir el canal" + detalle + ". Probá con otro canal o verificá que la URL sea accesible",
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    });
         } catch (Exception e) {
             Toast.makeText(this, "Error al transmitir", Toast.LENGTH_SHORT).show();
         }
