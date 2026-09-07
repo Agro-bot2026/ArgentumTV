@@ -270,6 +270,9 @@ public class MainActivity extends AppCompatActivity {
                             runOnUiThread(() -> {
                                 if (result != null && result.getStatus().isSuccess()) {
                                     Toast.makeText(MainActivity.this, "📺 Transmitiendo: " + nombre, Toast.LENGTH_SHORT).show();
+                                    // Transmisión exitosa: cortar la reproducción local
+                                    // y volver a la lista para elegir otro canal
+                                    cerrarReproductor();
                                 } else {
                                     String detalle = (result != null && result.getStatus().getStatusCode() != 0)
                                             ? " (" + result.getStatus().getStatusCode() + ")"
