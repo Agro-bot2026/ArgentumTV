@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     private MediaRouteButton mediaRouteButton;
     private CastContext castContext;
     private JSONObject canalActual;
+    private View reproductorContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
         btnCerrarReproductor = findViewById(R.id.btn_cerrar_reproductor);
         btnEnviarCast = findViewById(R.id.btn_enviar_cast);
         mediaRouteButton = findViewById(R.id.media_route_button);
+        reproductorContainer = findViewById(R.id.reproductor_container);
 
         recyclerCanales.setLayoutManager(new LinearLayoutManager(this));
         recyclerCategorias.setLayoutManager(new LinearLayoutManager(this));
@@ -195,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
 
         canalActual = canal;
 
-        findViewById(R.id.reproductor_container).setVisibility(View.VISIBLE);
+        reproductorContainer.setVisibility(View.VISIBLE);
         btnEnviarCast.setVisibility(View.VISIBLE);
 
         if (player == null) {
@@ -274,8 +276,19 @@ public class MainActivity extends AppCompatActivity {
             player = null;
         }
         playerView.setPlayer(null);
-        findViewById(R.id.reproductor_container).setVisibility(View.GONE);
+        reproductorContainer.setVisibility(View.GONE);
         btnEnviarCast.setVisibility(View.GONE);
+    }
+
+    // Botón "atrás": si el reproductor está abierto, primero cerrarlo
+    // (sin esto, Android cierra toda la app al volver)
+    @Override
+    public void onBackPressed() {
+        if (reproductorContainer != null && reproductorContainer.getVisibility() == View.VISIBLE) {
+            cerrarReproductor();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
