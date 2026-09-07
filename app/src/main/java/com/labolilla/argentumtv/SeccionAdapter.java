@@ -17,17 +17,13 @@ import java.util.Map;
 
 public class SeccionAdapter extends RecyclerView.Adapter<SeccionAdapter.SeccionViewHolder> {
 
-    public interface OnCanalClickListener {
-        void onCanalClick(JSONObject canal);
-    }
-
     private final Context context;
     private final Map<String, List<JSONObject>> secciones;  // categoría -> canales
     private final List<String> ordenCategorias;
-    private final OnCanalClickListener listener;
+    private final CanalAdapter.OnCanalClickListener listener;
 
     public SeccionAdapter(Context context, Map<String, List<JSONObject>> secciones,
-                          List<String> ordenCategorias, OnCanalClickListener listener) {
+                          List<String> ordenCategorias, CanalAdapter.OnCanalClickListener listener) {
         this.context = context;
         this.secciones = secciones;
         this.ordenCategorias = ordenCategorias;
