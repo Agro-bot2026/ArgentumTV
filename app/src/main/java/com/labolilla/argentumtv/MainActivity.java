@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerCanales;
     private RecyclerView recyclerCategorias;
-    private CanalAdapter canalAdapter;
+    private SeccionAdapter seccionAdapter;
     private CategoriaAdapter categoriaAdapter;
     private List<JSONObject> listaCanales = new ArrayList<>();
     private Map<String, List<JSONObject>> mapaCategorias = new LinkedHashMap<>();
@@ -104,8 +104,10 @@ public class MainActivity extends AppCompatActivity {
         recyclerCanales.setLayoutManager(new LinearLayoutManager(this));
         recyclerCategorias.setLayoutManager(new LinearLayoutManager(this));
 
-        canalAdapter = new CanalAdapter(this, listaCanales, canal -> reproducirCanal(canal));
-        recyclerCanales.setAdapter(canalAdapter);
+        // El adapter de secciones se arma en filtrarCanales() tras cargar los datos
+        seccionAdapter = new SeccionAdapter(this, new LinkedHashMap<>(), new ArrayList<>(),
+                canal -> reproducirCanal(canal));
+        recyclerCanales.setAdapter(seccionAdapter);
 
         categoriaAdapter = new CategoriaAdapter(this, new ArrayList<>(), categoria -> {
             categoriaActual = categoria;
@@ -182,18 +184,35 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // Filtra por búsqueda y/o categoría, y muestra el resultado como
+    // secciones horizontales (estilo Apple TV/Netflix)
     private void filtrarCanales() {
-        String query = buscador.getText().toString().toLowerCase();
-        List<JSONObject> filtrados = new ArrayList<>();
+        String query = buscador.getText().toString().trim().toLowerCase();
+
+        // Agrupar canales que coinciden, por categoría
+        Map<String, List<JSONObject>> secciones = new LinkedHashMap<>();
         for (JSONObject canal : listaCanales) {
             String nombre = canal.optString("nombre", "").toLowerCase();
-            String cat = canal.optString("categoria", "");
+            String cat = canal.optString("categoria", "General");
             boolean coincideNombre = nombre.contains(query);
             boolean coincideCat = (categoriaActual == null || cat.equals(categoriaActual));
-            if (coincideNombre && coincideCat) filtrados.add(canal);
+            if (coincideNombre && coincideCat) {
+                if (!secciones.containsKey(cat)) secciones.put(cat, new ArrayList<>());
+                secciones.get(cat).add(canal);
+            }
         }
-        canalAdapter = new CanalAdapter(this, filtrados, canal -> reproducirCanal(canal));
-        recyclerCanales.setAdapter(canalAdapter);
+
+        // Ordenar categorías: las que tengan canales con logo primero, y por cantidad
+        List<String> orden = new ArrayList<>(secciones.keySet());
+        orden.sort((a, b) -> {
+            long logosA = secciones.get(a).stream().filter(c -> !c.optString("logo", "").isEmpty()).count();
+            long logosB = secciones.get(b).stream().filter(c -> !c.optString("logo", "").isEmpty()).count();
+            if (logosA != logosB) return Long.compare(logosB, logosA);
+            return Integer.compare(secciones.get(b).size(), secciones.get(a).size());
+        });
+
+        seccionAdapter = new SeccionAdapter(this, secciones, orden, canal -> reproducirCanal(canal));
+        recyclerCanales.setAdapter(seccionAdapter);
     }
 
     private void reproducirCanal(JSONObject canal) {
