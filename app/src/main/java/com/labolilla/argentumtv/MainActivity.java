@@ -62,16 +62,22 @@ public class MainActivity extends AppCompatActivity {
     private PlayerView playerView;
     private ExoPlayer player;
     private Button btnCerrarReproductor;
+    private Button btnFullscreen;
     private Button btnEnviarCast;
     private MediaRouteButton mediaRouteButton;
     private CastContext castContext;
     private JSONObject canalActual;
     private View reproductorContainer;
+    private boolean enFullscreen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Las teclas físicas de volumen controlan el volumen del VIDEO (media),
+        // no el tono de llamada
+        setVolumeControlStream(android.media.AudioManager.STREAM_MUSIC);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -90,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
         buscador = findViewById(R.id.buscador);
         playerView = findViewById(R.id.player_view);
         btnCerrarReproductor = findViewById(R.id.btn_cerrar_reproductor);
+        btnFullscreen = findViewById(R.id.btn_fullscreen);
         btnEnviarCast = findViewById(R.id.btn_enviar_cast);
         mediaRouteButton = findViewById(R.id.media_route_button);
         reproductorContainer = findViewById(R.id.reproductor_container);
@@ -108,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerCategorias.setAdapter(categoriaAdapter);
 
         btnCerrarReproductor.setOnClickListener(v -> cerrarReproductor());
+        btnFullscreen.setOnClickListener(v -> toggleFullscreen());
         btnEnviarCast.setOnClickListener(v -> enviarAlCast());
 
         buscador.addTextChangedListener(new TextWatcher() {
@@ -298,13 +306,46 @@ public class MainActivity extends AppCompatActivity {
         playerView.setPlayer(null);
         reproductorContainer.setVisibility(View.GONE);
         btnEnviarCast.setVisibility(View.GONE);
+        salirFullscreen();
+    }
+
+    // Expandir el video a pantalla completa horizontal
+    private void toggleFullscreen() {
+        if (!enFullscreen) {
+            enFullscreen = true;
+            btnFullscreen.setText("🗗");
+            // Forzar orientación horizontal
+            setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            // Ocultar barras del sistema (modo inmersivo)
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        } else {
+            salirFullscreen();
+        }
+    }
+
+    private void salirFullscreen() {
+        if (!enFullscreen) return;
+        enFullscreen = false;
+        btnFullscreen.setText("⛶");
+        // Restaurar orientación automática
+        setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        // Mostrar barras del sistema de nuevo
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
     }
 
     // Botón "atrás": si el reproductor está abierto, primero cerrarlo
     // (sin esto, Android cierra toda la app al volver)
     @Override
     public void onBackPressed() {
-        if (reproductorContainer != null && reproductorContainer.getVisibility() == View.VISIBLE) {
+        if (enFullscreen) {
+            salirFullscreen();
+        } else if (reproductorContainer != null && reproductorContainer.getVisibility() == View.VISIBLE) {
             cerrarReproductor();
         } else {
             super.onBackPressed();
