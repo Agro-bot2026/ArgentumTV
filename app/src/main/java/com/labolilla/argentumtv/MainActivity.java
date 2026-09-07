@@ -120,6 +120,9 @@ public class MainActivity extends AppCompatActivity {
         try {
             castContext = CastContext.getSharedInstance(this);
             CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), mediaRouteButton);
+            // Forzar ícono blanco para que se vea sobre el fondo oscuro
+            mediaRouteButton.setColorStateList(
+                    android.content.res.ColorStateList.valueOf(android.graphics.Color.WHITE));
         } catch (Exception e) {
             mediaRouteButton.setVisibility(View.GONE);
         }
