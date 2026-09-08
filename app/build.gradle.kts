@@ -147,10 +147,13 @@ dependencies {
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.startup:startup-runtime:1.1.1")
     implementation("androidx.interpolator:interpolator:1.0.0")
-    implementation("androidx.media3:media3-exoplayer:1.4.1")
-    implementation("androidx.media3:media3-exoplayer-hls:1.4.1")
-    implementation("androidx.media3:media3-ui:1.4.1")
-    implementation("androidx.media3:media3-cast:1.4.1")
+    implementation("androidx.media3:media3-exoplayer:1.3.1")
+    implementation("androidx.media3:media3-exoplayer-hls:1.3.1")
+    implementation("androidx.media3:media3-ui:1.3.1")
+    implementation("androidx.media3:media3-cast:1.3.1")
+    // Decoder FFmpeg (compilado por Jellyfin — Google no publica el oficial):
+    // reproduce audio MP2/AC3/DTS/MP3 que el hardware no soporta
+    implementation("org.jellyfin.media3:media3-ffmpeg-decoder:1.3.1+2")
     implementation("com.google.android.gms:play-services-cast-framework:21.4.0")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("com.github.bumptech.glide:glide:4.16.0")

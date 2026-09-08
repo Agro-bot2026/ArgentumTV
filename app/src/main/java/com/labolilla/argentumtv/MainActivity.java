@@ -234,7 +234,13 @@ public class MainActivity extends AppCompatActivity {
                     .setConnectTimeoutMs(10000)
                     .setReadTimeoutMs(10000);
 
-            player = new ExoPlayer.Builder(this).build();
+            // Renderers con soporte de extensiones (FFmpeg para audio MP2/AC3)
+            androidx.media3.exoplayer.DefaultRenderersFactory renderersFactory =
+                    new androidx.media3.exoplayer.DefaultRenderersFactory(this);
+            renderersFactory.setExtensionRendererMode(
+                    androidx.media3.exoplayer.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER);
+
+            player = new ExoPlayer.Builder(this, renderersFactory).build();
             playerView.setPlayer(player);
             player.addListener(new Player.Listener() {
                 @Override
