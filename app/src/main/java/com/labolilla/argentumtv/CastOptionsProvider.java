@@ -13,7 +13,7 @@ public class CastOptionsProvider implements OptionsProvider {
     @Override
     public CastOptions getCastOptions(Context context) {
         return new CastOptions.Builder()
-                .setReceiverApplicationId(com.google.android.gms.cast.CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
+                .setReceiverApplicationId("3B323644")
                 .setStopReceiverApplicationWhenEndingSession(true)
                 .setResumeSavedSession(true)
                 .setEnableReconnectionService(true)
