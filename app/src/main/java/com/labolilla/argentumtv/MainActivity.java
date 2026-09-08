@@ -285,13 +285,24 @@ public class MainActivity extends AppCompatActivity {
             String nombre = canalActual.optString("nombre", "Canal");
             String logo = canalActual.optString("logo", "");
 
+            // Detectar el tipo de contenido según la URL: DASH (.mpd) vs HLS (.m3u8)
+            String contentType;
+            String urlLower = url.toLowerCase();
+            if (urlLower.contains(".mpd") || urlLower.contains("/dash") || urlLower.contains("manifest.mpd")) {
+                contentType = "application/dash+xml";
+            } else if (urlLower.contains(".m3u8")) {
+                contentType = "application/x-mpegurl";
+            } else {
+                contentType = "video/mp4";
+            }
+
             MediaMetadata metadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
             metadata.putString(MediaMetadata.KEY_TITLE, nombre);
             if (!logo.isEmpty()) metadata.addImage(new WebImage(Uri.parse(logo)));
 
             MediaInfo mediaInfo = new MediaInfo.Builder(url)
                     .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
-                    .setContentType("application/x-mpegurl")
+                    .setContentType(contentType)
                     .setMetadata(metadata)
                     .build();
 
