@@ -62,6 +62,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17 
         targetCompatibility = JavaVersion.VERSION_17 
+        // Requerido por el decoder FFmpeg (core library desugaring)
+        isCoreLibraryDesugaringEnabled = true
     }
 
     buildTypes {
@@ -157,4 +159,6 @@ dependencies {
     implementation("com.google.android.gms:play-services-cast-framework:21.4.0")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    // Core library desugaring (requerido por el decoder FFmpeg)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }
